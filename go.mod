@@ -1,4 +1,4 @@
-module company.com/retail
+module company.com/order-service
 
 go 1.23
 

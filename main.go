@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	"company.com/retail/config"
-	"company.com/retail/order"
+	"company.com/order-service/config"
+	"company.com/order-service/order"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

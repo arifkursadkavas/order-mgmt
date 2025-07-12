@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"company.com/retail/config"
+	"company.com/order-service/config"
 	"github.com/gin-gonic/gin"
 )
 
