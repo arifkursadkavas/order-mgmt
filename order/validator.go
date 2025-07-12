@@ -26,6 +26,10 @@ func validateOrderRequest(request CreateOrderRequest) error {
 		if item.ItemId == "" {
 			return errors.New(fmt.Sprintf("item at index %d does not have item id", i))
 		}
+
+		if item.CostEur < 0 {
+			return errors.New(fmt.Sprintf("item at index %d has negative cost value", i))
+		}
 	}
 
 	return nil
