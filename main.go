@@ -20,7 +20,6 @@ func main() {
 	}
 
 	r := gin.Default()
-
 	rg := r.Group("/api/v1")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
