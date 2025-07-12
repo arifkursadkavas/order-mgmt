@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"company.com/retail/config"
@@ -28,10 +29,12 @@ func main() {
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.Config.DBConnectionString))
 
 	if err != nil {
-		panic(err)
+		log.Fatalf("failed to connect to database")
+		return
 	}
 
 	orderDb := order.NewOrderStore(client)
+	orderDb.CreateIndexes()
 
 	orderHandler := order.NewOrderHandler(rg, orderDb)
 

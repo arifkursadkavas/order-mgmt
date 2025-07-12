@@ -3,7 +3,6 @@ package order
 import (
 	"context"
 
-	"company.com/retail/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -23,14 +22,14 @@ type orderDatabase struct {
 	client *mongo.Client
 }
 
-func NewOrderStore(client *mongo.Client) OrderStore {
+func NewOrderStore(client *mongo.Client) *orderDatabase {
 	return &orderDatabase{
 		client: client,
 	}
 }
 
 func (d *orderDatabase) AddOrders(orders []interface{}) error {
-	collection := config.Config.DBClient.Database(databaseName).Collection(orderCollectionName)
+	collection := d.client.Database(databaseName).Collection(orderCollectionName)
 
 	collection.InsertMany(context.Background(), orders)
 	return nil
@@ -45,7 +44,7 @@ func (d *orderDatabase) GetSummaries(pageSize, pageNumber int) ([]Summary, error
 	return []Summary{}, nil
 }
 
-func (d *orderDatabase) CreateIndexes() {
+func (d *orderDatabase) CreateIndexes() error {
 	collection := d.client.Database(databaseName).Collection(orderCollectionName)
 
 	indexes := []mongo.IndexModel{
@@ -60,5 +59,11 @@ func (d *orderDatabase) CreateIndexes() {
 		},
 	}
 
-	collection.Indexes().CreateMany(context.Background(), indexes)
+	_, err := collection.Indexes().CreateMany(context.Background(), indexes)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
