@@ -1,0 +1,4 @@
+DBConnectionString: mongodb://mongo:mongo@localhost:27017/
+DBDefaultTimeout: 10
+API_KEY: ThisIs@greatAPIK&y
+ServerPort: 8000
