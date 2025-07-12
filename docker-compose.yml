@@ -1,0 +1,16 @@
+services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+    expose:
+      - 27017
+    ports: 
+      - 27017:27017
+    volumes:
+      - mongo:/data/db
+
+volumes:
+  mongo:
