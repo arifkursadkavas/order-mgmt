@@ -35,6 +35,10 @@ func main() {
 
 	orderHandler := order.NewOrderHandler(rg, orderDb)
 
-	orderHandler.RegisterRoutes(&r.RouterGroup)
+	orderHandler.RegisterRoutes(rg)
+
+	r.Run(fmt.Sprintf(":%v", config.Config.ServerPort))
+
+	r.Run()
 
 }
