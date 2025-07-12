@@ -1,13 +1,42 @@
 package order
 
-type OrderItems struct {
-	ItemId  string
-	CostEur float32
+// Request Model
+type Order struct {
+	ItemId  string  `json:"itemId"`
+	CostEur float32 `json:"costEur"`
 }
 
 type CreateOrderRequest struct {
-	CustomerId string
-	OrderId    string
-	TimeStamp  string
-	Items      []OrderItems
+	CustomerId string  `json:"customerId"`
+	OrderId    string  `json:"orderId"`
+	TimeStamp  string  `json:"timestamp"`
+	Items      []Order `json:"items"`
+}
+
+// Response Models
+type ListItemsResponse struct {
+	Items []Item `json:"items"`
+}
+type Item struct {
+	CustomerId string  `json:"customerId"`
+	ItemId     string  `json:"itemId"`
+	CostEur    float32 `json:"costEur"`
+}
+
+type ListSummariesResponse struct {
+	Summaries []Summary `json:"summaries"`
+}
+type Summary struct {
+	CustomerId          string  `json:"customerId"`
+	NbrOfPurchasedItems int     `json:"nbrOfPurchasedItems"`
+	TotalAmountEur      float32 `json:"totalAmountEur"`
+}
+
+// Storage Models
+
+type OrderDb struct {
+	CustomerId string  `bson:"customerId"`
+	OrderId    string  `bson:"orderId"`
+	ItemId     string  `json:"itemId"`
+	CostEur    float32 `json:"costEur"`
 }
