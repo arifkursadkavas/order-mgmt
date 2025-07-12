@@ -32,7 +32,7 @@ type Summary struct {
 	TotalAmountEur      float32 `json:"totalAmountEur"`
 }
 
-// Storage Models
+// Storage Model
 
 type OrderDb struct {
 	CustomerId string  `bson:"customerId"`
