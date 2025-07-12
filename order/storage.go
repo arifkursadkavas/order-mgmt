@@ -1,9 +1,14 @@
 package order
 
-import "go.mongodb.org/mongo-driver/mongo"
+import (
+	"context"
+
+	"company.com/retail/config"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
 type OrderStore interface {
-	AddOrders(orders []OrderDb) error
+	AddOrders(orders []interface{}) error
 	GetOrders(pageSize, pageNumber int) ([]Item, error)
 	GetSummaries(pageSize, pageNumber int) ([]Summary, error)
 }
@@ -18,8 +23,10 @@ func NewOrderStore(client *mongo.Client) OrderStore {
 	}
 }
 
-func (d *orderDatabase) AddOrders(orders []OrderDb) error {
+func (d *orderDatabase) AddOrders(orders []interface{}) error {
+	collection := config.Config.DBClient.Database("retail").Collection("order")
 
+	collection.InsertMany(context.Background(), orders)
 	return nil
 }
 

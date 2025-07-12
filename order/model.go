@@ -39,4 +39,5 @@ type OrderDb struct {
 	OrderId    string  `bson:"orderId"`
 	ItemId     string  `json:"itemId"`
 	CostEur    float32 `json:"costEur"`
+	TimeStamp  string  `json:"timestamp"`
 }

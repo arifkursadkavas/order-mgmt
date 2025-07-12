@@ -38,7 +38,25 @@ func (o *OrderH) createOrders(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 	}
 
-	o.store.AddOrders()
+	var orders []interface{}
+
+	for _, ord := range request.Items {
+		orders = append(orders, OrderDb{
+			CustomerId: request.CustomerId,
+			OrderId:    request.OrderId,
+			TimeStamp:  request.TimeStamp,
+			ItemId:     ord.ItemId,
+			CostEur:    ord.CostEur,
+		})
+	}
+
+	err = o.store.AddOrders(orders)
+
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
+
+	c.JSON(http.StatusOK, nil)
 }
 
 func (o *OrderH) listItems(c *gin.Context) {
