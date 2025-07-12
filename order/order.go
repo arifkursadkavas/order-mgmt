@@ -31,11 +31,13 @@ func (o *OrderH) createOrders(c *gin.Context) {
 	err := c.BindJSON(&request)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	err = validateOrderRequest(request)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
 	}
 
 	var orders []interface{}
@@ -54,6 +56,7 @@ func (o *OrderH) createOrders(c *gin.Context) {
 
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, nil)
