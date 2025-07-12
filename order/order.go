@@ -1,8 +1,11 @@
 package order
 
 import (
+	"context"
 	"net/http"
+	"time"
 
+	"company.com/retail/config"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,6 +29,9 @@ func NewOrderHandler(r *gin.RouterGroup, store OrderStore) OrderI {
 }
 
 func (o *OrderH) createOrders(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
+	defer cancel()
+
 	var request CreateOrderRequest
 
 	err := c.BindJSON(&request)
@@ -46,13 +52,13 @@ func (o *OrderH) createOrders(c *gin.Context) {
 		orders = append(orders, OrderDb{
 			CustomerId: request.CustomerId,
 			OrderId:    request.OrderId,
-			TimeStamp:  request.TimeStamp,
+			CreatedAt:  time.Unix(0, request.TimeStamp*int64(time.Millisecond)),
 			ItemId:     ord.ItemId,
 			CostEur:    ord.CostEur,
 		})
 	}
 
-	err = o.store.AddOrders(orders)
+	err = o.store.AddOrders(ctx, orders)
 
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -63,10 +69,14 @@ func (o *OrderH) createOrders(c *gin.Context) {
 }
 
 func (o *OrderH) listItems(c *gin.Context) {
+	// ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
+	// defer cancel()
 
 }
 
 func (o *OrderH) listSummaries(c *gin.Context) {
+	// ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
+	// defer cancel()
 
 }
 
