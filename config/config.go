@@ -10,17 +10,10 @@ import (
 var Config appConfig
 
 type appConfig struct {
-	DBClient *mongo.Client
-
+	DBClient           *mongo.Client
 	DBConnectionString string `mapstructure:"dbConnectionString"`
-
-	DBDefaultTimeout int
-
-	UserSessionTimeout int64
-
-	ServerPort int `mapstructure:"server_port"`
-
-	ApiKey string `mapstructure:"api_key"`
+	ServerPort         int    `mapstructure:"server_port"`
+	APIDefaultTimeout  int    `mapstructure:"api_key"`
 }
 
 func LoadConfig(configPaths ...string) error {
@@ -39,9 +32,8 @@ func LoadConfig(configPaths ...string) error {
 	}
 
 	Config.DBConnectionString = v.Get("DBConnectionString").(string)
-	Config.DBDefaultTimeout = v.Get("DBDefaultTimeout").(int)
 
-	Config.ApiKey = v.Get("API_KEY").(string)
+	Config.APIDefaultTimeout = v.Get("APIDefaultTimeout").(int)
 	Config.ServerPort = v.Get("ServerPort").(int)
 
 	v.SetDefault("ServerPort", Config.ServerPort)
