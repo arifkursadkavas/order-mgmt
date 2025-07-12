@@ -4,7 +4,13 @@ import (
 	"context"
 
 	"company.com/retail/config"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+)
+
+var (
+	databaseName        = "retail"
+	orderCollectionName = "order"
 )
 
 type OrderStore interface {
@@ -24,7 +30,7 @@ func NewOrderStore(client *mongo.Client) OrderStore {
 }
 
 func (d *orderDatabase) AddOrders(orders []interface{}) error {
-	collection := config.Config.DBClient.Database("retail").Collection("order")
+	collection := config.Config.DBClient.Database(databaseName).Collection(orderCollectionName)
 
 	collection.InsertMany(context.Background(), orders)
 	return nil
@@ -37,4 +43,22 @@ func (d *orderDatabase) GetOrders(pageSize, pageNumber int) ([]Item, error) {
 
 func (d *orderDatabase) GetSummaries(pageSize, pageNumber int) ([]Summary, error) {
 	return []Summary{}, nil
+}
+
+func (d *orderDatabase) CreateIndexes() {
+	collection := d.client.Database(databaseName).Collection(orderCollectionName)
+
+	indexes := []mongo.IndexModel{
+		{
+			Keys: bson.D{{Key: "customerId", Value: 1}},
+		},
+		{
+			Keys: bson.D{{Key: "orderId", Value: 1}},
+		},
+		{
+			Keys: bson.D{{Key: "orderId", Value: 1}},
+		},
+	}
+
+	collection.Indexes().CreateMany(context.Background(), indexes)
 }
