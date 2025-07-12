@@ -49,10 +49,13 @@ func (d *orderDatabase) CreateIndexes() error {
 
 	indexes := []mongo.IndexModel{
 		{
+			Keys: bson.D{{Key: "_id", Value: 1}},
+		},
+		{
 			Keys: bson.D{{Key: "customerId", Value: 1}},
 		},
 		{
-			Keys: bson.D{{Key: "orderId", Value: 1}},
+			Keys: bson.D{{Key: "itemId", Value: 1}},
 		},
 		{
 			Keys: bson.D{{Key: "orderId", Value: 1}},

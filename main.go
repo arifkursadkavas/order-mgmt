@@ -34,7 +34,11 @@ func main() {
 	}
 
 	orderDb := order.NewOrderStore(client)
-	orderDb.CreateIndexes()
+
+	if err = orderDb.CreateIndexes(); err != nil {
+		log.Fatalf("failed to create db indexes")
+		return
+	}
 
 	orderHandler := order.NewOrderHandler(rg, orderDb)
 
