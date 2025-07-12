@@ -14,8 +14,8 @@ func validateOrderRequest(request CreateOrderRequest) error {
 		return errors.New("order id is missing in the request")
 	}
 
-	if request.TimeStamp == "" {
-		return errors.New("timestamp is missing in the request")
+	if request.TimeStamp < 0 {
+		return errors.New("invalid timestamp in the request")
 	}
 
 	if len(request.Items) == 0 {
@@ -24,11 +24,11 @@ func validateOrderRequest(request CreateOrderRequest) error {
 
 	for i, item := range request.Items {
 		if item.ItemId == "" {
-			return errors.New(fmt.Sprintf("item at index %d does not have item id", i))
+			return fmt.Errorf("item at index %d does not have item id", i)
 		}
 
 		if item.CostEur < 0 {
-			return errors.New(fmt.Sprintf("item at index %d has negative cost value", i))
+			return fmt.Errorf("item at index %d has negative cost value", i)
 		}
 	}
 
