@@ -1,25 +1,58 @@
 package order
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
 
-type Order struct {
-	DBClient *Client
+	"github.com/gin-gonic/gin"
+)
+
+type OrderI interface {
+	createOrders(c *gin.Context)
+	listItems(c *gin.Context)
+	listSummaries(c *gin.Context)
+	RegisterRoutes(r *gin.RouterGroup)
 }
 
-func NewOrderHandler(r *gin.RouterGroup, db *Client) *Order {
+type OrderH struct {
+	store OrderStore
+}
 
-	return &Order{
-		DBClient: db,
+func NewOrderHandler(r *gin.RouterGroup, store OrderStore) OrderI {
+
+	return &OrderH{
+		store: store,
 	}
 
 }
 
-func (o *Order) createOrder(c *gin.Context) {
+func (o *OrderH) createOrders(c *gin.Context) {
+	var request CreateOrderRequest
+
+	err := c.BindJSON(&request)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+	}
+
+	err = validateOrderRequest(request)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+	}
+
+	o.store.AddOrders()
+}
+
+func (o *OrderH) listItems(c *gin.Context) {
 
 }
 
-func (o *Order) RegisterRoutes(r *gin.RouterGroup) {
+func (o *OrderH) listSummaries(c *gin.Context) {
 
-	r.POST("/order", o.createOrder)
+}
+
+func (o *OrderH) RegisterRoutes(r *gin.RouterGroup) {
+
+	r.POST("/order", o.createOrders)
+	r.GET("/item/list", o.listItems)
+	r.GET("/summary/list", o.listSummaries)
 
 }
