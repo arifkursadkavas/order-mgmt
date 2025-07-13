@@ -20,7 +20,7 @@ func main() {
 	}
 
 	r := gin.Default()
-	rg := r.Group("/api/v1")
+	rg := r.Group("/api/v1") //group routes with version v1
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -43,8 +43,5 @@ func main() {
 
 	orderHandler.RegisterRoutes(rg)
 
-	r.Run(fmt.Sprintf(":%v", config.Config.ServerPort))
-
-	r.Run()
-
+	r.Run(fmt.Sprintf(":%v", config.Config.ServerPort)) // Starts server and waits for connection.
 }

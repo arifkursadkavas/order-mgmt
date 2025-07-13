@@ -12,6 +12,7 @@ var (
 	orderCollectionName = "order"
 )
 
+//go:generate mockery --name OrderStore --output ../internal/mocks --with-expecter
 type OrderStore interface {
 	AddOrders(ctx context.Context, orders []interface{}) error
 	GetOrders(ctx context.Context, pageSize, pageNumber int) ([]Item, error)
