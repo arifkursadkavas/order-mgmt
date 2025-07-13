@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -10,9 +11,9 @@ import (
 )
 
 type OrderI interface {
-	createOrders(c *gin.Context)
-	listItems(c *gin.Context)
-	listSummaries(c *gin.Context)
+	CreateOrders(c *gin.Context)
+	ListItems(c *gin.Context)
+	ListSummaries(c *gin.Context)
 	RegisterRoutes(r *gin.RouterGroup)
 }
 
@@ -21,13 +22,12 @@ type OrderH struct {
 }
 
 func NewOrderHandler(r *gin.RouterGroup, cache OrderCache) OrderI {
-
 	return &OrderH{
 		cache: cache,
 	}
 }
 
-func (o *OrderH) createOrders(c *gin.Context) {
+func (o *OrderH) CreateOrders(c *gin.Context) {
 	_, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
 	defer cancel()
 
@@ -36,6 +36,11 @@ func (o *OrderH) createOrders(c *gin.Context) {
 	err := c.BindJSON(&request)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	if len(request.Orders) == 0 {
+		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("request contains no order"))
 		return
 	}
 
@@ -57,7 +62,7 @@ func (o *OrderH) createOrders(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 }
 
-func (o *OrderH) listItems(c *gin.Context) {
+func (o *OrderH) ListItems(c *gin.Context) {
 	_, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
 	defer cancel()
 
@@ -72,7 +77,7 @@ func (o *OrderH) listItems(c *gin.Context) {
 
 }
 
-func (o *OrderH) listSummaries(c *gin.Context) {
+func (o *OrderH) ListSummaries(c *gin.Context) {
 	_, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
 	defer cancel()
 
@@ -89,9 +94,9 @@ func (o *OrderH) listSummaries(c *gin.Context) {
 
 func (o *OrderH) RegisterRoutes(r *gin.RouterGroup) {
 
-	r.POST("/order", o.createOrders)
-	r.GET("/item/list", o.listItems)
-	r.GET("/summary/list", o.listSummaries)
+	r.POST("/order", o.CreateOrders)
+	r.GET("/item/list", o.ListItems)
+	r.GET("/summary/list", o.ListSummaries)
 
 }
 
