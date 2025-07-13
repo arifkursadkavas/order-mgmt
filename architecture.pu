@@ -1,0 +1,19 @@
+@startuml
+!include https://raw.githubusercontent.com/kirchsth/C4-PlantUML/extended/C4_Container.puml
+
+AddRelTag("sync", $textColor="black", $lineColor="black", $lineStyle = DashedLine())
+
+LAYOUT_WITH_LEGEND()
+
+title Order Management Architecture
+
+System_Ext(api, "api", "Places orders and tracks them.")
+System(apiGateway, "API Gateway", "Receives external API calls")
+System_Ext(supplierSystem, "Supplier System", "External supplier management system.")
+System(CRMSystem, "CRM Order Management System", "Manages customer orders and inventory.")
+
+Rel_D(api, apiGateway, "Places and tracks orders", $tags="sync")
+Rel_R(CRMSystem, apiGateway, "Processes payment", $tags="sync")
+Rel_D(CRMSystem, supplierSystem, "Sends order details", $tags="sync")
+
+@enduml
