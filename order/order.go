@@ -22,7 +22,6 @@ type OrderH struct {
 	store OrderStore
 }
 
-
 func NewOrderHandler(r *gin.RouterGroup, store OrderStore) OrderI {
 
 	return &OrderH{
@@ -119,7 +118,7 @@ func (o *OrderH) RegisterRoutes(r *gin.RouterGroup) {
 func getPaginationParams(c *gin.Context) (int, int) {
 
 	pageSize := 10  //default page size
-	pageNumber := 0 //default page number, first page
+	pageNumber := 1 //default page number, first page
 
 	queryPageSize := c.Query("pageSize")
 	queryPageNumber := c.Query("pageNumber")
@@ -131,7 +130,7 @@ func getPaginationParams(c *gin.Context) (int, int) {
 
 	pageNumber, err = strconv.Atoi(queryPageNumber)
 	if err != nil {
-		log.Printf("page number is not provided, using default page number 0")
+		log.Printf("page number is not provided, using default page number 1")
 	}
 
 	return pageSize, pageNumber

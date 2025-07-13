@@ -5,6 +5,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
@@ -40,7 +41,10 @@ func (d *orderDatabase) GetOrders(ctx context.Context, pageSize, pageNumber int)
 
 	collection := d.client.Database(databaseName).Collection(orderCollectionName)
 
-	cursor, err := collection.Find(ctx, bson.D{}, nil)
+	opts := options.Find().SetSkip(int64((pageNumber - 1) * pageSize)).SetLimit(int64(pageSize))
+
+	//TODO: Sorting and filtering can be added, but skipped for brevity
+	cursor, err := collection.Find(ctx, bson.D{}, opts)
 
 	if err != nil {
 		return []Item{}, nil
@@ -57,6 +61,7 @@ func (d *orderDatabase) GetOrders(ctx context.Context, pageSize, pageNumber int)
 func (d *orderDatabase) GetSummaries(ctx context.Context, pageSize, pageNumber int) ([]Summary, error) {
 	collection := d.client.Database(databaseName).Collection(orderCollectionName)
 
+	//TODO: Sorting and filtering can be added, but skipped for brevity
 	groupStage := bson.D{
 		{"$group",
 			bson.D{
@@ -68,7 +73,10 @@ func (d *orderDatabase) GetSummaries(ctx context.Context, pageSize, pageNumber i
 		},
 	}
 
-	pipeline := mongo.Pipeline{groupStage}
+	skipStage := bson.D{{"$skip", (pageNumber - 1) * pageSize}}
+	limitStage := bson.D{{"$limit", pageSize}}
+
+	pipeline := mongo.Pipeline{groupStage, skipStage, limitStage}
 
 	cursor, err := collection.Aggregate(ctx, pipeline, nil)
 
