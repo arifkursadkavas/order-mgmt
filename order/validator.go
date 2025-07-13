@@ -1,35 +1,38 @@
 package order
 
 import (
-	"errors"
 	"fmt"
 )
 
 func validateOrderRequest(request CreateOrderRequest) error {
-	if request.CustomerId == "" {
-		return errors.New("customer id is missing in the request")
-	}
 
-	if request.OrderId == "" {
-		return errors.New("order id is missing in the request")
-	}
-
-	if request.TimeStamp < 0 {
-		return errors.New("invalid timestamp in the request")
-	}
-
-	if len(request.Items) == 0 {
-		return errors.New("no order item exist in the payload")
-	}
-
-	for i, item := range request.Items {
-		if item.ItemId == "" {
-			return fmt.Errorf("item at index %d does not have item id", i)
+	for k, ord := range request.Orders {
+		if ord.CustomerId == "" {
+			return fmt.Errorf("customer id is missing in the request for order at index %d", k)
 		}
 
-		if item.CostEur < 0 {
-			return fmt.Errorf("item at index %d has negative cost value", i)
+		if ord.OrderId == "" {
+			return fmt.Errorf("order id is missing in the request for order at index %d", k)
 		}
+
+		if ord.TimeStamp < 0 {
+			return fmt.Errorf("invalid timestamp in the request for order at index %d", k)
+		}
+
+		if len(ord.Items) == 0 {
+			return fmt.Errorf("no order item exist in the payload for order at index %d", k)
+		}
+
+		for i, item := range ord.Items {
+			if item.ItemId == "" {
+				return fmt.Errorf("item at index %d does not have item id for order at index %d", i, k)
+			}
+
+			if item.CostEur < 0 {
+				return fmt.Errorf("item at index %d has negative cost value for order at index %d", i, k)
+			}
+		}
+
 	}
 
 	return nil

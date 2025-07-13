@@ -2,9 +2,7 @@ package order
 
 import (
 	"context"
-	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"company.com/order-service/config"
@@ -19,18 +17,18 @@ type OrderI interface {
 }
 
 type OrderH struct {
-	store OrderStore
+	cache OrderCache
 }
 
-func NewOrderHandler(r *gin.RouterGroup, store OrderStore) OrderI {
+func NewOrderHandler(r *gin.RouterGroup, cache OrderCache) OrderI {
 
 	return &OrderH{
-		store: store,
+		cache: cache,
 	}
 }
 
 func (o *OrderH) createOrders(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
+	_, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
 	defer cancel()
 
 	var request CreateOrderRequest
@@ -47,19 +45,9 @@ func (o *OrderH) createOrders(c *gin.Context) {
 		return
 	}
 
-	var orders []interface{}
+	orders, orderSummaries := prepareOrderData(request.Orders)
 
-	for _, ord := range request.Items {
-		orders = append(orders, OrderDb{
-			CustomerId: request.CustomerId,
-			OrderId:    request.OrderId,
-			CreatedAt:  time.Unix(0, request.TimeStamp*int64(time.Millisecond)),
-			ItemId:     ord.ItemId,
-			CostEur:    ord.CostEur,
-		})
-	}
-
-	err = o.store.AddOrders(ctx, orders)
+	err = o.cache.AddOrders(orders, orderSummaries)
 
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -70,12 +58,10 @@ func (o *OrderH) createOrders(c *gin.Context) {
 }
 
 func (o *OrderH) listItems(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
+	_, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
 	defer cancel()
 
-	pageSize, pageNumber := getPaginationParams(c)
-
-	items, err := o.store.GetOrders(ctx, pageSize, pageNumber)
+	items, err := o.cache.GetOrders()
 
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -87,12 +73,10 @@ func (o *OrderH) listItems(c *gin.Context) {
 }
 
 func (o *OrderH) listSummaries(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
+	_, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
 	defer cancel()
 
-	pageSize, pageNumber := getPaginationParams(c)
-
-	summaries, err := o.store.GetSummaries(ctx, pageSize, pageNumber)
+	summaries, err := o.cache.GetSummaries()
 
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
@@ -111,27 +95,42 @@ func (o *OrderH) RegisterRoutes(r *gin.RouterGroup) {
 
 }
 
-// Gets pagination parameters,
-// Tries to obtain from query param of the request,
-// Falls back to default values if not provided.
-// returns pageSize, pageNumber respectively.
-func getPaginationParams(c *gin.Context) (int, int) {
+func prepareOrderData(ords []Order) ([]OrderCacheModel, map[string]OrderSummaryCacheModel) {
 
-	pageSize := 10  //default page size
-	pageNumber := 1 //default page number, first page
+	var orders []OrderCacheModel
+	var orderSummary = make(map[string]OrderSummaryCacheModel)
 
-	queryPageSize := c.Query("pageSize")
-	queryPageNumber := c.Query("pageNumber")
+	for _, ord := range ords {
 
-	pageSize, err := strconv.Atoi(queryPageSize)
-	if err != nil {
-		log.Printf("page size is not provided, using default page size 10")
+		currentOrderSumEur := float32(0.0) //To keep sum of all costs and use it in summary.
+
+		for _, item := range ord.Items {
+			orders = append(orders, OrderCacheModel{
+				CustomerId: ord.CustomerId,
+				OrderId:    ord.OrderId,
+				CreatedAt:  time.Unix(0, ord.TimeStamp*int64(time.Millisecond)),
+				ItemId:     item.ItemId,
+				CostEur:    item.CostEur,
+			})
+			currentOrderSumEur += item.CostEur
+		}
+
+		//Calculate the summaries by grouping them under same customerId in case a request contains more than
+		// one record(OrderCacheModel) for a customer.
+		if os, found := orderSummary[ord.CustomerId]; found {
+			updatedOs := OrderSummaryCacheModel{}
+			updatedOs.NbrOfPurchasedItems = os.NbrOfPurchasedItems + len(ord.Items)
+			updatedOs.TotalAmountEur = os.TotalAmountEur + currentOrderSumEur
+			orderSummary[ord.CustomerId] = updatedOs
+		} else {
+			newOs := OrderSummaryCacheModel{
+				NbrOfPurchasedItems: len(ord.Items),
+				TotalAmountEur:      currentOrderSumEur,
+			}
+			orderSummary[ord.CustomerId] = newOs
+		}
 	}
 
-	pageNumber, err = strconv.Atoi(queryPageNumber)
-	if err != nil {
-		log.Printf("page number is not provided, using default page number 1")
-	}
+	return orders, orderSummary
 
-	return pageSize, pageNumber
 }

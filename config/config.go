@@ -4,16 +4,15 @@ import (
 	"fmt"
 
 	"github.com/spf13/viper"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var Config appConfig
 
 type appConfig struct {
-	DBClient           *mongo.Client
-	DBConnectionString string `mapstructure:"dbConnectionString"`
-	ServerPort         int    `mapstructure:"server_port"`
-	APIDefaultTimeout  int    `mapstructure:"api_key"`
+	CacheExpiryDuration  int `mapstructure:"cache_expiry_duration"`
+	CacheCleanupInterval int `mapstructure:"cache_cleanup_interval"`
+	ServerPort           int `mapstructure:"server_port"`
+	APIDefaultTimeout    int `mapstructure:"api_default_timeout"`
 }
 
 func LoadConfig(configPaths ...string) error {
@@ -31,12 +30,12 @@ func LoadConfig(configPaths ...string) error {
 		return fmt.Errorf("failed to load config file %s", err)
 	}
 
-	Config.DBConnectionString = v.Get("DBConnectionString").(string)
+	// Config.CacheExpiryDuration = v.Get("CacheExpiryDuration").(int)
+	// Config.CacheCleanupInterval = v.Get("CacheCleanupInterval").(int)
+	// Config.APIDefaultTimeout = v.Get("APIDefaultTimeout").(int)
+	// Config.ServerPort = v.Get("ServerPort").(int)
 
-	Config.APIDefaultTimeout = v.Get("APIDefaultTimeout").(int)
-	Config.ServerPort = v.Get("ServerPort").(int)
-
-	v.SetDefault("ServerPort", Config.ServerPort)
+	//v.SetDefault("ServerPort", Config.ServerPort)
 
 	return v.Unmarshal(&Config)
 }

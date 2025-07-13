@@ -3,16 +3,20 @@ package order
 import "time"
 
 // Request Model
-type Order struct {
+type OrderItem struct {
 	ItemId  string  `json:"itemId"`
 	CostEur float32 `json:"costEur"`
 }
 
+type Order struct {
+	CustomerId string      `json:"customerId"`
+	OrderId    string      `json:"orderId"`
+	TimeStamp  int64       `json:"timestamp"` // Note: I assumed this to be int64 instead of a string to eliminate a conversion on the backend. But can be for sure string
+	Items      []OrderItem `json:"items"`
+}
+
 type CreateOrderRequest struct {
-	CustomerId string  `json:"customerId"`
-	OrderId    string  `json:"orderId"`
-	TimeStamp  int64   `json:"timestamp"` // Note: I assumed this to be int64 instead of a string to eliminate a conversion on the backend. But can be for sure string
-	Items      []Order `json:"items"`
+	Orders []Order `json:"orders"`
 }
 
 // Response Models
@@ -35,7 +39,13 @@ type Summary struct {
 }
 
 // Storage Model
-type OrderDb struct {
+
+type OrderSummaryCacheModel struct {
+	CustomerId          string  `json:"customerId"`
+	TotalAmountEur      float32 `json:"totalAmountEur"`
+	NbrOfPurchasedItems int     `json:"nbrOfPurchasedItems"`
+}
+type OrderCacheModel struct {
 	CustomerId string    `bson:"customerId"`
 	OrderId    string    `bson:"orderId"`
 	ItemId     string    `bson:"itemId"`

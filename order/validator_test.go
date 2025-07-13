@@ -7,13 +7,28 @@ import (
 )
 
 var testRequest = CreateOrderRequest{
-	CustomerId: "1",
-	OrderId:    "2",
-	TimeStamp:  123,
-	Items: []Order{
+	Orders: []Order{
 		{
-			ItemId:  "3",
-			CostEur: 123.2,
+			CustomerId: "1",
+			OrderId:    "2",
+			TimeStamp:  123,
+			Items: []OrderItem{
+				{
+					ItemId:  "3",
+					CostEur: 123.2,
+				},
+			},
+		},
+		{
+			CustomerId: "2",
+			OrderId:    "5",
+			TimeStamp:  123,
+			Items: []OrderItem{
+				{
+					ItemId:  "4",
+					CostEur: 13.2,
+				},
+			},
 		},
 	},
 }
@@ -28,7 +43,7 @@ func TestShouldReturnNoErrorWhenRequestIsValid(t *testing.T) {
 func TestShouldReturnErrorWhenCustomerIdIsEmpty(t *testing.T) {
 	assertion := assert.New(t)
 
-	testRequest.CustomerId = ""
+	testRequest.Orders[0].CustomerId = ""
 
 	err := validateOrderRequest(testRequest)
 
@@ -38,7 +53,7 @@ func TestShouldReturnErrorWhenCustomerIdIsEmpty(t *testing.T) {
 func TestShouldReturnErrorWhenOrderIdIsEmpty(t *testing.T) {
 	assertion := assert.New(t)
 
-	testRequest.OrderId = ""
+	testRequest.Orders[0].OrderId = ""
 
 	err := validateOrderRequest(testRequest)
 
@@ -48,7 +63,7 @@ func TestShouldReturnErrorWhenOrderIdIsEmpty(t *testing.T) {
 func TestShouldReturnErrorWhenTimestampIsInvalid(t *testing.T) {
 	assertion := assert.New(t)
 
-	testRequest.TimeStamp = -1
+	testRequest.Orders[0].TimeStamp = -1
 
 	err := validateOrderRequest(testRequest)
 
@@ -58,7 +73,7 @@ func TestShouldReturnErrorWhenTimestampIsInvalid(t *testing.T) {
 func TestShouldReturnErrorWhenOrderItemIdIsEmpty(t *testing.T) {
 	assertion := assert.New(t)
 
-	testRequest.Items = append(testRequest.Items, Order{
+	testRequest.Orders[0].Items = append(testRequest.Orders[0].Items, OrderItem{
 		ItemId:  "",
 		CostEur: 123,
 	})
@@ -71,7 +86,7 @@ func TestShouldReturnErrorWhenOrderItemIdIsEmpty(t *testing.T) {
 func TestShouldReturnErrorWhenOrderItemCostIsInvalid(t *testing.T) {
 	assertion := assert.New(t)
 
-	testRequest.Items = append(testRequest.Items, Order{
+	testRequest.Orders[0].Items = append(testRequest.Orders[0].Items, OrderItem{
 		ItemId:  "1",
 		CostEur: -12,
 	})

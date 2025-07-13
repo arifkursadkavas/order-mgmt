@@ -1,16 +1,13 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"company.com/order-service/config"
 	"company.com/order-service/order"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/patrickmn/go-cache"
 )
 
 func main() {
@@ -22,24 +19,13 @@ func main() {
 	r := gin.Default()
 	rg := r.Group("/api/v1") //group routes with version v1
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+	defaultCacheExpiration := time.Duration(config.Config.CacheExpiryDuration) * time.Hour
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.Config.DBConnectionString))
+	cache := cache.New(defaultCacheExpiration, time.Duration(config.Config.CacheCleanupInterval)*time.Hour)
 
-	if err != nil {
-		log.Fatalf("failed to connect to database")
-		return
-	}
+	orderCache := order.NewOrderCache(cache, defaultCacheExpiration)
 
-	orderDb := order.NewOrderStore(client)
-
-	if err = orderDb.CreateIndexes(); err != nil {
-		log.Fatalf("failed to create db indexes")
-		return
-	}
-
-	orderHandler := order.NewOrderHandler(rg, orderDb)
+	orderHandler := order.NewOrderHandler(rg, orderCache)
 
 	orderHandler.RegisterRoutes(rg)
 

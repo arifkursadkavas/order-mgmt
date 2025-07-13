@@ -1,4 +1,4 @@
-DBConnectionString: mongodb://mongo:mongo@localhost:27019/
-DBDefaultTimeout: 10
-APIDefaultTimeout: 5
-ServerPort: 8000
+cache_expiry_duration: 24
+cache_cleanup_interval: 120
+api_default_timeout: 5
+server_port: 8000
