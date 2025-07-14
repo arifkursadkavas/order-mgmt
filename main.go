@@ -6,8 +6,9 @@ import (
 
 	"company.com/order-service/config"
 	"company.com/order-service/order"
+	cache "company.com/order-service/order/cache"
 	"github.com/gin-gonic/gin"
-	"github.com/patrickmn/go-cache"
+	goCache "github.com/patrickmn/go-cache"
 )
 
 func main() {
@@ -21,9 +22,9 @@ func main() {
 
 	defaultCacheExpiration := time.Duration(config.Config.CacheExpiryDuration) * time.Hour
 
-	cache := cache.New(defaultCacheExpiration, time.Duration(config.Config.CacheCleanupInterval)*time.Hour)
+	c := goCache.New(defaultCacheExpiration, time.Duration(config.Config.CacheCleanupInterval)*time.Hour)
 
-	orderCache := order.NewOrderCache(cache, defaultCacheExpiration)
+	orderCache := cache.NewOrderCache(c, defaultCacheExpiration)
 
 	orderHandler := order.NewOrderHandler(rg, orderCache)
 

@@ -1,11 +1,10 @@
-package order
+package cache
 
 import (
 	"errors"
 	"time"
 
 	"company.com/order-service/order/model"
-	cache "github.com/patrickmn/go-cache"
 )
 
 var (
@@ -13,19 +12,26 @@ var (
 	ordersSummaryCacheKey = "summaries"
 )
 
-//go:generate mockery --name OrderCache --output ../internal/mocks --with-expecter
+//go:generate mockery --name OrderCache --output ../../internal/mocks --with-expecter
 type OrderCache interface {
 	AddOrders(orders []model.OrderCacheModel, orderSummaries map[string]model.OrderSummaryCacheModel) error
 	GetOrders() ([]model.Item, error)
 	GetSummaries() ([]model.Summary, error)
 }
 
+//go:generate mockery --name Cache --output ../../internal/mocks --with-expecter
+type Cache interface {
+	Get(k string) (interface{}, bool)
+	Add(k string, x interface{}, d time.Duration) error
+	Set(k string, x interface{}, d time.Duration)
+}
+
 type orderCache struct {
-	cache             *cache.Cache
+	cache             Cache
 	defaultExpiration time.Duration
 }
 
-func NewOrderCache(cache *cache.Cache, defaultExpiration time.Duration) *orderCache {
+func NewOrderCache(cache Cache, defaultExpiration time.Duration) *orderCache {
 
 	return &orderCache{
 		cache:             cache,

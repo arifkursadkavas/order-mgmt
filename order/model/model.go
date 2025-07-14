@@ -46,9 +46,9 @@ type OrderSummaryCacheModel struct {
 	NbrOfPurchasedItems int     `json:"nbrOfPurchasedItems"`
 }
 type OrderCacheModel struct {
-	CustomerId string    `bson:"customerId"`
-	OrderId    string    `bson:"orderId"`
-	ItemId     string    `bson:"itemId"`
-	CostEur    float32   `bson:"costEur"`
-	CreatedAt  time.Time `bson:"createdAt"`
+	CustomerId string    `json:"customerId"`
+	OrderId    string    `json:"orderId"`
+	ItemId     string    `json:"itemId"`
+	CostEur    float32   `json:"costEur"`
+	CreatedAt  time.Time `json:"createdAt"`
 }

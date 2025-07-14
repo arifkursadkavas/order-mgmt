@@ -7,13 +7,15 @@ LAYOUT_WITH_LEGEND()
 
 title Order Management Architecture
 
-System_Ext(api, "api", "Places orders and tracks them.")
+System_Ext(api, "api", "Places orders")
 System(apiGateway, "API Gateway", "Receives external API calls")
-System_Ext(supplierSystem, "Supplier System", "External supplier management system.")
-System(CRMSystem, "CRM Order Management System", "Manages customer orders and inventory.")
+System(iam, "IAM", "Stores Identities, does Authentication/ Authorization on API calls")
+System(bff, "Backend For Frontend Service", "Proxies calls to domain services")
+System(orderSvc, "OrderService", "Manages order data. Stores it in program memory")
 
-Rel_D(api, apiGateway, "Places and tracks orders", $tags="sync")
-Rel_R(CRMSystem, apiGateway, "Processes payment", $tags="sync")
-Rel_D(CRMSystem, supplierSystem, "Sends order details", $tags="sync")
+Rel_D(api, apiGateway, "Places orders", $tags="sync")
+Rel_L(iam, apiGateway, "Authenticates/Authorizes clients", $tags="sync")
+Rel_D(apiGateway,bff, "Message bus message to BFF", $tags="sync")
+Rel_D(bff,orderSvc, "Sends order details", $tags="sync")
 
 @enduml

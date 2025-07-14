@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"company.com/order-service/config"
+	"company.com/order-service/order/cache"
 	"company.com/order-service/order/model"
 	"github.com/gin-gonic/gin"
 )
@@ -19,10 +20,10 @@ type OrderI interface {
 }
 
 type OrderH struct {
-	cache OrderCache
+	cache cache.OrderCache
 }
 
-func NewOrderHandler(r *gin.RouterGroup, cache OrderCache) OrderI {
+func NewOrderHandler(r *gin.RouterGroup, cache cache.OrderCache) OrderI {
 	return &OrderH{
 		cache: cache,
 	}
