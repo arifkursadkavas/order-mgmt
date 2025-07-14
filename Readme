@@ -37,7 +37,7 @@ Which in turn generate the binary of the service at the folder root as "order-se
 ./order-service
 ```
 
-## API documentation
+## API documentation 
 API documentation can be accessed in the browser by navigating to
 ```bash
 localhost:8000/swagger

@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	order "company.com/order-service/order"
+	model "company.com/order-service/order/model"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -21,7 +21,7 @@ func (_m *OrderCache) EXPECT() *OrderCache_Expecter {
 }
 
 // AddOrders provides a mock function with given fields: orders, orderSummaries
-func (_m *OrderCache) AddOrders(orders []order.OrderCacheModel, orderSummaries map[string]order.OrderSummaryCacheModel) error {
+func (_m *OrderCache) AddOrders(orders []model.OrderCacheModel, orderSummaries map[string]model.OrderSummaryCacheModel) error {
 	ret := _m.Called(orders, orderSummaries)
 
 	if len(ret) == 0 {
@@ -29,7 +29,7 @@ func (_m *OrderCache) AddOrders(orders []order.OrderCacheModel, orderSummaries m
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func([]order.OrderCacheModel, map[string]order.OrderSummaryCacheModel) error); ok {
+	if rf, ok := ret.Get(0).(func([]model.OrderCacheModel, map[string]model.OrderSummaryCacheModel) error); ok {
 		r0 = rf(orders, orderSummaries)
 	} else {
 		r0 = ret.Error(0)
@@ -44,15 +44,15 @@ type OrderCache_AddOrders_Call struct {
 }
 
 // AddOrders is a helper method to define mock.On call
-//   - orders []order.OrderCacheModel
-//   - orderSummaries map[string]order.OrderSummaryCacheModel
+//   - orders []model.OrderCacheModel
+//   - orderSummaries map[string]model.OrderSummaryCacheModel
 func (_e *OrderCache_Expecter) AddOrders(orders interface{}, orderSummaries interface{}) *OrderCache_AddOrders_Call {
 	return &OrderCache_AddOrders_Call{Call: _e.mock.On("AddOrders", orders, orderSummaries)}
 }
 
-func (_c *OrderCache_AddOrders_Call) Run(run func(orders []order.OrderCacheModel, orderSummaries map[string]order.OrderSummaryCacheModel)) *OrderCache_AddOrders_Call {
+func (_c *OrderCache_AddOrders_Call) Run(run func(orders []model.OrderCacheModel, orderSummaries map[string]model.OrderSummaryCacheModel)) *OrderCache_AddOrders_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].([]order.OrderCacheModel), args[1].(map[string]order.OrderSummaryCacheModel))
+		run(args[0].([]model.OrderCacheModel), args[1].(map[string]model.OrderSummaryCacheModel))
 	})
 	return _c
 }
@@ -62,29 +62,29 @@ func (_c *OrderCache_AddOrders_Call) Return(_a0 error) *OrderCache_AddOrders_Cal
 	return _c
 }
 
-func (_c *OrderCache_AddOrders_Call) RunAndReturn(run func([]order.OrderCacheModel, map[string]order.OrderSummaryCacheModel) error) *OrderCache_AddOrders_Call {
+func (_c *OrderCache_AddOrders_Call) RunAndReturn(run func([]model.OrderCacheModel, map[string]model.OrderSummaryCacheModel) error) *OrderCache_AddOrders_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetOrders provides a mock function with no fields
-func (_m *OrderCache) GetOrders() ([]order.Item, error) {
+func (_m *OrderCache) GetOrders() ([]model.Item, error) {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetOrders")
 	}
 
-	var r0 []order.Item
+	var r0 []model.Item
 	var r1 error
-	if rf, ok := ret.Get(0).(func() ([]order.Item, error)); ok {
+	if rf, ok := ret.Get(0).(func() ([]model.Item, error)); ok {
 		return rf()
 	}
-	if rf, ok := ret.Get(0).(func() []order.Item); ok {
+	if rf, ok := ret.Get(0).(func() []model.Item); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]order.Item)
+			r0 = ret.Get(0).([]model.Item)
 		}
 	}
 
@@ -114,34 +114,34 @@ func (_c *OrderCache_GetOrders_Call) Run(run func()) *OrderCache_GetOrders_Call 
 	return _c
 }
 
-func (_c *OrderCache_GetOrders_Call) Return(_a0 []order.Item, _a1 error) *OrderCache_GetOrders_Call {
+func (_c *OrderCache_GetOrders_Call) Return(_a0 []model.Item, _a1 error) *OrderCache_GetOrders_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *OrderCache_GetOrders_Call) RunAndReturn(run func() ([]order.Item, error)) *OrderCache_GetOrders_Call {
+func (_c *OrderCache_GetOrders_Call) RunAndReturn(run func() ([]model.Item, error)) *OrderCache_GetOrders_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetSummaries provides a mock function with no fields
-func (_m *OrderCache) GetSummaries() ([]order.Summary, error) {
+func (_m *OrderCache) GetSummaries() ([]model.Summary, error) {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetSummaries")
 	}
 
-	var r0 []order.Summary
+	var r0 []model.Summary
 	var r1 error
-	if rf, ok := ret.Get(0).(func() ([]order.Summary, error)); ok {
+	if rf, ok := ret.Get(0).(func() ([]model.Summary, error)); ok {
 		return rf()
 	}
-	if rf, ok := ret.Get(0).(func() []order.Summary); ok {
+	if rf, ok := ret.Get(0).(func() []model.Summary); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]order.Summary)
+			r0 = ret.Get(0).([]model.Summary)
 		}
 	}
 
@@ -171,12 +171,12 @@ func (_c *OrderCache_GetSummaries_Call) Run(run func()) *OrderCache_GetSummaries
 	return _c
 }
 
-func (_c *OrderCache_GetSummaries_Call) Return(_a0 []order.Summary, _a1 error) *OrderCache_GetSummaries_Call {
+func (_c *OrderCache_GetSummaries_Call) Return(_a0 []model.Summary, _a1 error) *OrderCache_GetSummaries_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *OrderCache_GetSummaries_Call) RunAndReturn(run func() ([]order.Summary, error)) *OrderCache_GetSummaries_Call {
+func (_c *OrderCache_GetSummaries_Call) RunAndReturn(run func() ([]model.Summary, error)) *OrderCache_GetSummaries_Call {
 	_c.Call.Return(run)
 	return _c
 }

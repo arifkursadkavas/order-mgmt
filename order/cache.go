@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"company.com/order-service/order/model"
 	cache "github.com/patrickmn/go-cache"
 )
 
@@ -14,9 +15,9 @@ var (
 
 //go:generate mockery --name OrderCache --output ../internal/mocks --with-expecter
 type OrderCache interface {
-	AddOrders(orders []OrderCacheModel, orderSummaries map[string]OrderSummaryCacheModel) error
-	GetOrders() ([]Item, error)
-	GetSummaries() ([]Summary, error)
+	AddOrders(orders []model.OrderCacheModel, orderSummaries map[string]model.OrderSummaryCacheModel) error
+	GetOrders() ([]model.Item, error)
+	GetSummaries() ([]model.Summary, error)
 }
 
 type orderCache struct {
@@ -34,7 +35,7 @@ func NewOrderCache(cache *cache.Cache, defaultExpiration time.Duration) *orderCa
 
 // This method adds the orders in the format expected by the two listing methods.
 // One cache for the listing individual items, other for the summaries
-func (c *orderCache) AddOrders(orders []OrderCacheModel, incomingSummaries map[string]OrderSummaryCacheModel) error {
+func (c *orderCache) AddOrders(orders []model.OrderCacheModel, incomingSummaries map[string]model.OrderSummaryCacheModel) error {
 
 	//Individual items with order data
 
@@ -43,7 +44,7 @@ func (c *orderCache) AddOrders(orders []OrderCacheModel, incomingSummaries map[s
 
 	//if exists update the existing
 	if e {
-		existingOrders := o.([]OrderCacheModel)
+		existingOrders := o.([]model.OrderCacheModel)
 		existingOrders = append(existingOrders, orders...)
 		c.cache.Set(ordersCacheKey, existingOrders, c.defaultExpiration)
 	} else {
@@ -62,11 +63,11 @@ func (c *orderCache) AddOrders(orders []OrderCacheModel, incomingSummaries map[s
 
 	if exists {
 		//if exists iterate through each incoming order to check if there exists a customerId key in the existing cache
-		existingOrderSummaries := orderSums.(map[string]OrderSummaryCacheModel)
+		existingOrderSummaries := orderSums.(map[string]model.OrderSummaryCacheModel)
 
 		for customerId, os := range incomingSummaries {
 			if o, ok := (existingOrderSummaries)[customerId]; ok {
-				var update = OrderSummaryCacheModel{
+				var update = model.OrderSummaryCacheModel{
 					CustomerId:          customerId,
 					NbrOfPurchasedItems: o.NbrOfPurchasedItems + os.NbrOfPurchasedItems,
 					TotalAmountEur:      o.TotalAmountEur + os.TotalAmountEur,
@@ -82,19 +83,19 @@ func (c *orderCache) AddOrders(orders []OrderCacheModel, incomingSummaries map[s
 	return nil
 }
 
-func (c *orderCache) GetOrders() ([]Item, error) {
+func (c *orderCache) GetOrders() ([]model.Item, error) {
 
 	o, found := c.cache.Get(ordersCacheKey)
 
 	if !found {
-		return []Item{}, errors.New("no order found")
+		return []model.Item{}, errors.New("no order found")
 	}
 
-	orders := o.([]OrderCacheModel)
+	orders := o.([]model.OrderCacheModel)
 
-	var items []Item
+	var items []model.Item
 	for _, o := range orders {
-		items = append(items, Item{
+		items = append(items, model.Item{
 			CustomerId: o.CustomerId,
 			ItemId:     o.ItemId,
 			CostEur:    o.CostEur,
@@ -104,19 +105,19 @@ func (c *orderCache) GetOrders() ([]Item, error) {
 	return items, nil
 }
 
-func (c *orderCache) GetSummaries() ([]Summary, error) {
+func (c *orderCache) GetSummaries() ([]model.Summary, error) {
 
 	o, found := c.cache.Get(ordersSummaryCacheKey)
 
 	if !found {
-		return []Summary{}, errors.New("no summary found")
+		return []model.Summary{}, errors.New("no summary found")
 	}
 
-	orderSummaries := o.(map[string]OrderSummaryCacheModel)
+	orderSummaries := o.(map[string]model.OrderSummaryCacheModel)
 
-	var items []Summary
+	var items []model.Summary
 	for _, o := range orderSummaries {
-		items = append(items, Summary{
+		items = append(items, model.Summary{
 			CustomerId:          o.CustomerId,
 			NbrOfPurchasedItems: o.NbrOfPurchasedItems,
 			TotalAmountEur:      o.TotalAmountEur,

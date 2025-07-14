@@ -10,21 +10,21 @@ import (
 	"testing"
 
 	"company.com/order-service/internal/mocks"
-	"company.com/order-service/order"
+	"company.com/order-service/order/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-func getBody() order.CreateOrderRequest {
-	return order.CreateOrderRequest{
-		Orders: []order.Order{
+func getBody() model.CreateOrderRequest {
+	return model.CreateOrderRequest{
+		Orders: []model.Order{
 			{
 				CustomerId: "1",
 				OrderId:    "2",
 				TimeStamp:  1,
-				Items: []order.OrderItem{
+				Items: []model.OrderItem{
 					{
 						ItemId:  "1",
 						CostEur: 12,
@@ -44,7 +44,7 @@ func TestCreateOrders(t *testing.T) {
 
 	tests := []struct {
 		name  string
-		body  order.CreateOrderRequest
+		body  model.CreateOrderRequest
 		code  int
 		cache *mocks.OrderCache
 	}{
@@ -60,7 +60,7 @@ func TestCreateOrders(t *testing.T) {
 		},
 		{
 			name: "TestCreateFailsWhenRequestBodyInvalid_400",
-			body: order.CreateOrderRequest{},
+			body: model.CreateOrderRequest{},
 			code: 400,
 			cache: func() *mocks.OrderCache {
 				ch := new(mocks.OrderCache)
@@ -94,7 +94,7 @@ func TestCreateOrders(t *testing.T) {
 		w := httptest.NewRecorder()
 
 		g := gin.New()
-		h := order.NewOrderHandler(&g.RouterGroup, tt.cache)
+		h := NewOrderHandler(&g.RouterGroup, tt.cache)
 
 		c, _ := gin.CreateTestContext(w)
 		jsonbytes, err := json.Marshal(tt.body)
@@ -129,7 +129,7 @@ func TestListItems(t *testing.T) {
 			code: 200,
 			cache: func() *mocks.OrderCache {
 				ch := new(mocks.OrderCache)
-				ch.On("GetOrders").Return([]order.Item{}, nil)
+				ch.On("GetOrders").Return([]model.Item{}, nil)
 				return ch
 			}(),
 		},
@@ -138,7 +138,7 @@ func TestListItems(t *testing.T) {
 			code: 500,
 			cache: func() *mocks.OrderCache {
 				ch := new(mocks.OrderCache)
-				ch.On("GetOrders").Return([]order.Item{}, errors.New("err"))
+				ch.On("GetOrders").Return([]model.Item{}, errors.New("err"))
 				return ch
 			}(),
 		},
@@ -148,7 +148,7 @@ func TestListItems(t *testing.T) {
 		w := httptest.NewRecorder()
 
 		g := gin.New()
-		h := order.NewOrderHandler(&g.RouterGroup, tt.cache)
+		h := NewOrderHandler(&g.RouterGroup, tt.cache)
 
 		c, _ := gin.CreateTestContext(w)
 
@@ -177,7 +177,7 @@ func TestListSummaries(t *testing.T) {
 			code: 200,
 			cache: func() *mocks.OrderCache {
 				ch := new(mocks.OrderCache)
-				ch.On("GetSummaries").Return([]order.Summary{}, nil)
+				ch.On("GetSummaries").Return([]model.Summary{}, nil)
 				return ch
 			}(),
 		},
@@ -186,7 +186,7 @@ func TestListSummaries(t *testing.T) {
 			code: 500,
 			cache: func() *mocks.OrderCache {
 				ch := new(mocks.OrderCache)
-				ch.On("GetSummaries").Return([]order.Summary{}, errors.New("err"))
+				ch.On("GetSummaries").Return([]model.Summary{}, errors.New("err"))
 				return ch
 			}(),
 		},
@@ -196,7 +196,7 @@ func TestListSummaries(t *testing.T) {
 		w := httptest.NewRecorder()
 
 		g := gin.New()
-		h := order.NewOrderHandler(&g.RouterGroup, tt.cache)
+		h := NewOrderHandler(&g.RouterGroup, tt.cache)
 
 		c, _ := gin.CreateTestContext(w)
 

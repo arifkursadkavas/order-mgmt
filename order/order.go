@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"company.com/order-service/config"
+	"company.com/order-service/order/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,7 +32,7 @@ func (o *OrderH) CreateOrders(c *gin.Context) {
 	_, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
 	defer cancel()
 
-	var request CreateOrderRequest
+	var request model.CreateOrderRequest
 
 	err := c.BindJSON(&request)
 	if err != nil {
@@ -73,7 +74,7 @@ func (o *OrderH) ListItems(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, ListItemsResponse{Items: items})
+	c.JSON(http.StatusOK, model.ListItemsResponse{Items: items})
 
 }
 
@@ -88,7 +89,7 @@ func (o *OrderH) ListSummaries(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, ListSummariesResponse{Summaries: summaries})
+	c.JSON(http.StatusOK, model.ListSummariesResponse{Summaries: summaries})
 
 }
 
@@ -100,17 +101,17 @@ func (o *OrderH) RegisterRoutes(r *gin.RouterGroup) {
 
 }
 
-func prepareOrderData(ords []Order) ([]OrderCacheModel, map[string]OrderSummaryCacheModel) {
+func prepareOrderData(ords []model.Order) ([]model.OrderCacheModel, map[string]model.OrderSummaryCacheModel) {
 
-	var orders []OrderCacheModel
-	var orderSummary = make(map[string]OrderSummaryCacheModel)
+	var orders []model.OrderCacheModel
+	var orderSummary = make(map[string]model.OrderSummaryCacheModel)
 
 	for _, ord := range ords {
 
 		currentOrderSumEur := float32(0.0) //To keep sum of all costs and use it in summary.
 
 		for _, item := range ord.Items {
-			orders = append(orders, OrderCacheModel{
+			orders = append(orders, model.OrderCacheModel{
 				CustomerId: ord.CustomerId,
 				OrderId:    ord.OrderId,
 				CreatedAt:  time.Unix(0, ord.TimeStamp*int64(time.Millisecond)),
@@ -123,12 +124,12 @@ func prepareOrderData(ords []Order) ([]OrderCacheModel, map[string]OrderSummaryC
 		//Calculate the summaries by grouping them under same customerId in case a request contains more than
 		// one record(OrderCacheModel) for a customer.
 		if os, found := orderSummary[ord.CustomerId]; found {
-			updatedOs := OrderSummaryCacheModel{}
+			updatedOs := model.OrderSummaryCacheModel{}
 			updatedOs.NbrOfPurchasedItems = os.NbrOfPurchasedItems + len(ord.Items)
 			updatedOs.TotalAmountEur = os.TotalAmountEur + currentOrderSumEur
 			orderSummary[ord.CustomerId] = updatedOs
 		} else {
-			newOs := OrderSummaryCacheModel{
+			newOs := model.OrderSummaryCacheModel{
 				NbrOfPurchasedItems: len(ord.Items),
 				TotalAmountEur:      currentOrderSumEur,
 			}

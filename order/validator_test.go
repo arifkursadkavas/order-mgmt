@@ -3,16 +3,17 @@ package order
 import (
 	"testing"
 
+	"company.com/order-service/order/model"
 	"github.com/stretchr/testify/assert"
 )
 
-var testRequest = CreateOrderRequest{
-	Orders: []Order{
+var testRequest = model.CreateOrderRequest{
+	Orders: []model.Order{
 		{
 			CustomerId: "1",
 			OrderId:    "2",
 			TimeStamp:  123,
-			Items: []OrderItem{
+			Items: []model.OrderItem{
 				{
 					ItemId:  "3",
 					CostEur: 123.2,
@@ -23,7 +24,7 @@ var testRequest = CreateOrderRequest{
 			CustomerId: "2",
 			OrderId:    "5",
 			TimeStamp:  123,
-			Items: []OrderItem{
+			Items: []model.OrderItem{
 				{
 					ItemId:  "4",
 					CostEur: 13.2,
@@ -73,7 +74,7 @@ func TestShouldReturnErrorWhenTimestampIsInvalid(t *testing.T) {
 func TestShouldReturnErrorWhenOrderItemIdIsEmpty(t *testing.T) {
 	assertion := assert.New(t)
 
-	testRequest.Orders[0].Items = append(testRequest.Orders[0].Items, OrderItem{
+	testRequest.Orders[0].Items = append(testRequest.Orders[0].Items, model.OrderItem{
 		ItemId:  "",
 		CostEur: 123,
 	})
@@ -86,7 +87,7 @@ func TestShouldReturnErrorWhenOrderItemIdIsEmpty(t *testing.T) {
 func TestShouldReturnErrorWhenOrderItemCostIsInvalid(t *testing.T) {
 	assertion := assert.New(t)
 
-	testRequest.Orders[0].Items = append(testRequest.Orders[0].Items, OrderItem{
+	testRequest.Orders[0].Items = append(testRequest.Orders[0].Items, model.OrderItem{
 		ItemId:  "1",
 		CostEur: -12,
 	})

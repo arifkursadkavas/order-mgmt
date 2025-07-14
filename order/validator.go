@@ -2,9 +2,11 @@ package order
 
 import (
 	"fmt"
+
+	"company.com/order-service/order/model"
 )
 
-func validateOrderRequest(request CreateOrderRequest) error {
+func validateOrderRequest(request model.CreateOrderRequest) error {
 
 	for k, ord := range request.Orders {
 		if ord.CustomerId == "" {
