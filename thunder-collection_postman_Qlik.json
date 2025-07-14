@@ -1,0 +1,78 @@
+{
+    "info": {
+        "_postman_id": "3f4620e5-e3c8-48ab-9e1f-006709637b7c",
+        "name": "Qlik",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": ""
+    },
+    "item": [
+        {
+            "name": "http://localhost:8000/api/v1/item/list",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/item/list",
+                    "path": [
+                        "api",
+                        "v1",
+                        "item",
+                        "list"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8000"
+                }
+            }
+        },
+        {
+            "name": "http://localhost:8000/api/v1/summary/list",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/summary/list",
+                    "path": [
+                        "api",
+                        "v1",
+                        "summary",
+                        "list"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8000"
+                }
+            }
+        },
+        {
+            "name": "http://localhost:8000/api/v1/order",
+            "request": {
+                "method": "POST",
+                "url": {
+                    "raw": "http://localhost:8000/api/v1/order",
+                    "path": [
+                        "api",
+                        "v1",
+                        "order"
+                    ],
+                    "protocol": "http",
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "8000"
+                },
+                "body": {
+                    "mode": "raw",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    },
+                    "raw": "{\n  \"orders\": [\n    {\n      \"customerId\": \"01\",\n      \"orderId\": \"50\",\n      \"timestamp\": 1637245070513,\n      \"items\": [\n        {\n          \"itemId\": \"20201\",\n          \"costEur\": 2\n        }\n      ]\n    }\n  ]\n}"
+                }
+            }
+        }
+    ]
+}
