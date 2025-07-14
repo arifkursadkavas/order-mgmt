@@ -2,15 +2,18 @@
 
 This is a minimal service which accepts orders in a certain format through the REST API and provides listing methods for order items and summary.
 
-## Build and Run
+## Testing
 
-This service requires a running  Mongo DB instance, which is provided as a docker container defined in the docker-compose.yaml file.\
-Make sure you have docker engine and docker-compose installed and run the following command to start the DB service
+Unit tests can be run by issuing following command
 
 ```bash
-docker-compose up -d
+make unit
 ```
-Mongo DB will be accepting connections on 27019 port.
+
+## Build and Run
+
+This service stores data in program memory and doesnt require any external data store.
+
 
 Service uses a config file inside:
 
@@ -20,28 +23,21 @@ Service uses a config file inside:
 
 with the content
 ```yaml
-DBConnectionString: mongodb://mongo:mongo@localhost:27019/
-DBDefaultTimeout: 10
-APIDefaultTimeout: 5
-ServerPort: 8000
+cache_expiry_duration: 24
+cache_cleanup_interval: 120
+api_default_timeout: 5
+server_port: 8000
 ```
 To build the service run
 
 ```bash
-go build .
+make start
 ```
 
-Which in turn generate the binary of the service at the folder root as "order-service". Service can be run by
+Which in turn generate the binary of the service at the folder root as "order-service" and run it
 
-```bash
-./order-service
-```
-
-## API documentation 
-API documentation can be accessed in the browser by navigating to
-```bash
-localhost:8000/swagger
-```
+## Open API documentation
+API documentation at /docs/openapi.yaml location can be viewed with an openapi viewer
 
 ## License
 None
