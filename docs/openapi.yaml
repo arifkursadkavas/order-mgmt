@@ -1,0 +1,177 @@
+openapi: 3.0.3
+info:
+  title: "Order Management"
+  description: API for interacting orders. Error responses left out for brevity
+  version: 1.0.0
+  contact:
+    name: Company
+    url: https://www.company.com
+servers:
+  - url: https://{region}.company.com
+    variables:
+      region:
+        enum:
+          - europe
+          - america
+          - asia
+        default: europe
+tags:
+  - name: Orders
+paths:
+  /api/v1/orders:
+    post:
+      summary: Add orders
+      description: Adds a collection of orders.
+      operationId: addOrders
+      requestBody:
+        content: {
+          "application/json": {
+            "schema": {
+              $ref: '#/components/schemas/CreateOrderRequest'
+            }
+          }
+        }
+      responses:
+        "200":
+          description: "OK: Your request succeeded."
+      security:
+        - bearerAuth:
+            - company.order.crud
+      tags:
+        - Orders
+  /api/v1/item/list:
+    get:
+      summary: Get items
+      description: Returns a collection of items.
+      operationId: getItems
+      responses:
+        "200":
+          description: "OK: Your request succeeded."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListItemsResponse"
+      security:
+        - bearerAuth:
+            - company.order.r
+      tags:
+        - Orders
+  /api/v1/summary/list:
+    get:
+      summary: Get order summaries
+      description: Returns a collection of summaries.
+      operationId: getSummaries
+      responses:
+        "200":
+          description: "OK: Your request succeeded."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListSummariesResponse"
+      security:
+        - bearerAuth:
+            - company.order.r
+      tags:
+        - Orders
+components:
+  schemas:
+    OrderItem:
+      type: object
+      description: Order item object
+      properties:
+        itemId:
+          type: string
+          description: Id of the item.
+          example: "123"
+        costEur:
+          type: string
+          description: Cost of the item.
+          example: 123.123
+    Order:
+      type: object
+      description: Orders list
+      properties:
+        customerId:
+          type: string
+          description: Id of the customer.
+          example: "123"
+        orderId:
+          type: string
+          description: Id of the order.
+          example: "34"
+        timestamp:
+          type: integer
+          description: Unix timestamp.
+          example: 1752269148
+        items:
+          type: array
+          description: Array of purchased items.
+          items:
+            type: object
+            $ref: '#/components/schemas/OrderItem'
+            properties:
+             customerId:
+                type: string
+                description: Id of the customer.
+                example: "123"
+             orderId:
+                type: string
+                description: Id of the order.
+                example: "34"
+    CreateOrderRequest:
+      type: array
+      items:
+        type: object
+        $ref: '#/components/schemas/Order'
+    Item:
+      type: object
+      description: Order item object
+      properties:
+        customerId:
+          type: string
+          description: Id of the customer.
+          example: "123"
+        itemId:
+          type: string
+          description: Id of the item.
+          example: "123"
+        costEur:
+          type: string
+          description: Cost of the item.
+          example: 123.123
+    ListItemsResponse:
+      type: array
+      description: List item response.
+      properties:
+        items:
+          type: object
+          $ref: "#/components/schemas/Item"
+    Summary:
+      type: object
+      description: Order item object
+      properties:
+        customerId:
+          type: string
+          description: Id of the customer.
+          example: "123"
+        itemId:
+          type: string
+          description: Id of the item.
+          example: "123"
+        costEur:
+          type: string
+          description: Cost of the item.
+          example: 123.123
+    ListSummariesResponse:
+     type: array
+     description: Response for the list of summaries.
+     properties:
+        summaries:
+          type: object
+          $ref: "#/components/schemas/Summary"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
