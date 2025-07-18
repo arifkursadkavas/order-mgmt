@@ -12,11 +12,11 @@ import (
 )
 
 func main() {
-
+	// Reviewcomments +++ Config using viper +++
 	if err := config.LoadConfig("./config"); err != nil {
 		panic(fmt.Errorf("config error: %s", err))
 	}
-
+	// Reviewcomments +++ for using gin
 	r := gin.Default()
 	rg := r.Group("/api/v1") //group routes with version v1
 

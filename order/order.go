@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Reviewcomments --- not go standard names
 type OrderI interface {
 	CreateOrders(c *gin.Context)
 	ListItems(c *gin.Context)
@@ -45,7 +46,7 @@ func (o *OrderH) CreateOrders(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, fmt.Errorf("request contains no order"))
 		return
 	}
-
+	// Reviewcomments above validation could be in validation
 	err = validateOrderRequest(request)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -79,6 +80,8 @@ func (o *OrderH) ListItems(c *gin.Context) {
 
 }
 
+// Reviewcomments --- summary should be generated on request and not when orders are created
+// concurrency issues + resource heavy
 func (o *OrderH) ListSummaries(c *gin.Context) {
 	_, cancel := context.WithTimeout(context.Background(), time.Duration(config.Config.APIDefaultTimeout)*time.Second)
 	defer cancel()
@@ -94,14 +97,16 @@ func (o *OrderH) ListSummaries(c *gin.Context) {
 
 }
 
+// Reviewcomments --- why are routes defined here? they should be separated
 func (o *OrderH) RegisterRoutes(r *gin.RouterGroup) {
-
+	// Reviewcomments --- no understanding of guideliness for naming routes
 	r.POST("/order", o.CreateOrders)
-	r.GET("/item/list", o.ListItems)
+	r.GET("/item/list", o.ListItems) // Reviewcomments --- no parameter to customerId
 	r.GET("/summary/list", o.ListSummaries)
 
 }
 
+// Reviewcomments --- could prepare order summary separately
 func prepareOrderData(ords []model.Order) ([]model.OrderCacheModel, map[string]model.OrderSummaryCacheModel) {
 
 	var orders []model.OrderCacheModel
@@ -128,6 +133,7 @@ func prepareOrderData(ords []model.Order) ([]model.OrderCacheModel, map[string]m
 			updatedOs := model.OrderSummaryCacheModel{}
 			updatedOs.NbrOfPurchasedItems = os.NbrOfPurchasedItems + len(ord.Items)
 			updatedOs.TotalAmountEur = os.TotalAmountEur + currentOrderSumEur
+			// Reviewcomments --- so the summary will be overwritten on each orders post request.
 			orderSummary[ord.CustomerId] = updatedOs
 		} else {
 			newOs := model.OrderSummaryCacheModel{

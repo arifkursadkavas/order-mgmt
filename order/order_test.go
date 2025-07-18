@@ -17,6 +17,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+// Reviewcomments -- tests are not validating response body, they are just checking status codes
+
 func getBody() model.CreateOrderRequest {
 	return model.CreateOrderRequest{
 		Orders: []model.Order{
@@ -39,6 +41,7 @@ func TestCreateOrders(t *testing.T) {
 	assertion := assert.New(t)
 
 	body := getBody()
+	// Reviewcomments --- maybe put invalid body in a separate function
 	invalidBody := getBody()
 	invalidBody.Orders[0].CustomerId = ""
 

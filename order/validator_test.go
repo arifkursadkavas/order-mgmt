@@ -36,6 +36,8 @@ func getRequest() model.CreateOrderRequest {
 	}
 }
 
+// Reviewcomments --- this should be 1 test per function (using table driven tests)
+
 func TestShouldReturnNoErrorWhenRequestIsValid(t *testing.T) {
 	assertion := assert.New(t)
 

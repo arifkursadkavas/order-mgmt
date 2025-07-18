@@ -89,6 +89,7 @@ func (c *orderCache) AddOrders(orders []model.OrderCacheModel, incomingSummaries
 	return nil
 }
 
+// Reviewcomments --- no filtering/querying by customerId
 func (c *orderCache) GetOrders() ([]model.Item, error) {
 
 	o, found := c.cache.Get(ordersCacheKey)

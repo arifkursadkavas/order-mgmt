@@ -30,6 +30,8 @@ func LoadConfig(configPaths ...string) error {
 		return fmt.Errorf("failed to load config file %s", err)
 	}
 
+	// Reviewcomments --- dont leave commented code ---
+
 	// Config.CacheExpiryDuration = v.Get("CacheExpiryDuration").(int)
 	// Config.CacheCleanupInterval = v.Get("CacheCleanupInterval").(int)
 	// Config.APIDefaultTimeout = v.Get("APIDefaultTimeout").(int)
